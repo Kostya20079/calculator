@@ -1,33 +1,36 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
+interface PersonCardProps {
+  name: string;
+}
+
+function PersonCard({ name }: PersonCardProps) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.nameText}>{name}</Text>
+      <Text style={styles.subText}>Zaawansowane programowanie systemów mobilnych</Text>
+    </View>
+  );
+}
+
 export default function App() {
+  const [visible, setVisible] = useState(true);
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      {/* Nagłówek - stała wysokość */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Header</Text>
-      </View>
+      <Pressable
+        onPress={() => setVisible(!visible)}
+        style={styles.button}
+        accessibilityRole="button"
+      >
+        <Text style={styles.buttonLabel}>{visible ? 'Hide' : 'Show'}</Text>
+      </Pressable>
 
-      {/* Obszar środkowy - zajmuje całą pozostałą przestrzeń z 3 równomiernie rozłożonymi elementami */}
-      <View style={styles.content}>
-        <View style={styles.box}>
-          <Text style={styles.boxText}>A</Text>
-        </View>
-        <View style={styles.box}>
-          <Text style={styles.boxText}>B</Text>
-        </View>
-        <View style={styles.box}>
-          <Text style={styles.boxText}>C</Text>
-        </View>
-      </View>
-
-      {/* Stopka - stała wysokość */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Footer</Text>
-      </View>
+      {/* Renderowane warunkowo przy użyciu flagi ze stanu */}
+      {visible && <PersonCard name="Konstanty Kowalski" />}
     </View>
   );
 }
@@ -36,50 +39,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-  },
-  header: {
-    height: 70,
-    backgroundColor: '#1d3557',
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 10,
+    padding: 20,
   },
-  headerText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  content: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-    paddingHorizontal: 16,
-  },
-  box: {
-    width: 70,
-    height: 70,
-    backgroundColor: '#e0f2fe',
+  button: {
+    backgroundColor: '#0284c7',
+    minHeight: 48,
+    minWidth: 120,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 24,
   },
-  boxText: {
-    color: '#0369a1',
-    fontSize: 22,
-    fontWeight: 'bold',
+  buttonLabel: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
-  footer: {
-    height: 60,
-    backgroundColor: '#f1f5f9',
-    justifyContent: 'center',
+  card: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    width: '100%',
+    maxWidth: 320,
   },
-  footerText: {
+  nameText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0f172a',
+    marginBottom: 6,
+  },
+  subText: {
+    fontSize: 13,
     color: '#64748b',
-    fontSize: 14,
+    textAlign: 'center',
   },
 });
