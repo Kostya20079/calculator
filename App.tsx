@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  useWindowDimensions,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 interface CalcButtonProps {
   label: string;
   onPress: (symbol: string) => void;
   flex?: number;
+  isLandscape?: boolean;
 }
 
-export function CalcButton({ label, onPress, flex = 1 }: CalcButtonProps) {
+export function CalcButton({
+  label,
+  onPress,
+  flex = 1,
+  isLandscape = false,
+}: CalcButtonProps) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -20,7 +35,14 @@ export function CalcButton({ label, onPress, flex = 1 }: CalcButtonProps) {
       accessibilityRole="button"
       accessibilityLabel={`Przycisk ${label}`}
     >
-      <Text style={styles.calcButtonText}>{label}</Text>
+      <Text
+        style={[
+          styles.calcButtonText,
+          isLandscape && styles.calcButtonTextLandscape,
+        ]}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -29,20 +51,33 @@ interface KeypadProps {
   keys: string[];
   columns?: number;
   onKeyPress: (symbol: string) => void;
+  style?: StyleProp<ViewStyle>;
+  isLandscape?: boolean;
 }
 
-export function Keypad({ keys, columns = 4, onKeyPress }: KeypadProps) {
+export function Keypad({
+  keys,
+  columns = 4,
+  onKeyPress,
+  style,
+  isLandscape = false,
+}: KeypadProps) {
   const rows: string[][] = [];
   for (let i = 0; i < keys.length; i += columns) {
     rows.push(keys.slice(i, i + columns));
   }
 
   return (
-    <View style={styles.keypad}>
+    <View style={[styles.keypad, style]}>
       {rows.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
           {row.map((btn) => (
-            <CalcButton key={btn} label={btn} onPress={onKeyPress} />
+            <CalcButton
+              key={btn}
+              label={btn}
+              onPress={onKeyPress}
+              isLandscape={isLandscape}
+            />
           ))}
         </View>
       ))}
@@ -50,7 +85,7 @@ export function Keypad({ keys, columns = 4, onKeyPress }: KeypadProps) {
   );
 }
 
-export const BASIC_KEYS = [
+export const BASIC = [
   'AC', '±', '%', '÷',
   '7', '8', '9', '×',
   '4', '5', '6', '−',
@@ -58,7 +93,18 @@ export const BASIC_KEYS = [
   '0', ',', '⌫', '=',
 ];
 
+export const EXTENDED = [
+  '(', ')',
+  'x²', '√',
+  'xʸ', '1/x',
+  'π', 'e',
+  'ln', 'log',
+];
+
 export default function App() {
+  const { width, height } = useWindowDimensions();
+  const landscape = width > height;
+
   const [expression, setExpression] = useState('');
 
   const handleKeyPress = (symbol: string): void => {
@@ -72,18 +118,31 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        landscape ? styles.containerLandscape : styles.containerPortrait,
+      ]}
+    >
       <StatusBar style="auto" />
 
       {/* Wyświetlacz kalkulatora */}
-      <View style={styles.displayContainer}>
+      <View
+        style={[
+          styles.displayContainer,
+          landscape && styles.displayContainerLandscape,
+        ]}
+      >
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.displayScrollContent}
         >
           <Text
-            style={styles.displayText}
+            style={[
+              styles.displayText,
+              landscape && styles.displayTextLandscape,
+            ]}
             numberOfLines={1}
             ellipsizeMode="head"
           >
@@ -92,8 +151,25 @@ export default function App() {
         </ScrollView>
       </View>
 
-      {/* Pełna klawiatura kalkulatora */}
-      <Keypad keys={BASIC_KEYS} columns={4} onKeyPress={handleKeyPress} />
+      {/* Kontener klawiatur: w poziomie układ wierszowy, w pionie kolumnowy */}
+      <View style={landscape ? styles.rowLayout : styles.columnLayout}>
+        <Keypad
+          keys={BASIC}
+          columns={4}
+          onKeyPress={handleKeyPress}
+          style={landscape ? styles.basicLandscape : styles.keypad}
+          isLandscape={landscape}
+        />
+        {landscape && (
+          <Keypad
+            keys={EXTENDED}
+            columns={2}
+            onKeyPress={handleKeyPress}
+            style={styles.extendedLandscape}
+            isLandscape={landscape}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -102,10 +178,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f1f5f9',
+  },
+  containerPortrait: {
     justifyContent: 'flex-start',
     paddingTop: 60,
     paddingBottom: 24,
     paddingHorizontal: 16,
+  },
+  containerLandscape: {
+    justifyContent: 'flex-start',
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
   },
   displayContainer: {
     height: 90,
@@ -118,6 +202,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e2e8f0',
   },
+  displayContainerLandscape: {
+    height: 56,
+    paddingVertical: 6,
+    marginBottom: 10,
+  },
   displayScrollContent: {
     flexGrow: 1,
     justifyContent: 'flex-end',
@@ -128,6 +217,23 @@ const styles = StyleSheet.create({
     color: '#0f172a',
     textAlign: 'right',
     fontWeight: '500',
+  },
+  displayTextLandscape: {
+    fontSize: 26,
+  },
+  columnLayout: {
+    flex: 1,
+  },
+  rowLayout: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 10,
+  },
+  basicLandscape: {
+    flex: 4,
+  },
+  extendedLandscape: {
+    flex: 2,
   },
   keypad: {
     flex: 1,
@@ -153,5 +259,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#0f172a',
     fontWeight: '600',
+  },
+  calcButtonTextLandscape: {
+    fontSize: 18,
   },
 });
