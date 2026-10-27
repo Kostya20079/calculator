@@ -10,6 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 interface CalcButtonProps {
   label: string;
@@ -101,7 +102,7 @@ export const EXTENDED = [
   'ln', 'log',
 ];
 
-export default function App() {
+export function Calculator() {
   const { width, height } = useWindowDimensions();
   const landscape = width > height;
 
@@ -174,22 +175,40 @@ export default function App() {
   );
 }
 
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      {/* W orientacji poziomej wcięcia po bokach chronią skrajne kolumny przed zasłonięciem */}
+      <SafeAreaView
+        style={styles.safeArea}
+        edges={['top', 'bottom', 'left', 'right']}
+      >
+        <Calculator />
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f1f5f9',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f1f5f9',
   },
   containerPortrait: {
     justifyContent: 'flex-start',
-    paddingTop: 60,
-    paddingBottom: 24,
+    paddingTop: 8,
+    paddingBottom: 16,
     paddingHorizontal: 16,
   },
   containerLandscape: {
     justifyContent: 'flex-start',
-    paddingTop: 16,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingHorizontal: 12,
   },
   displayContainer: {
     height: 90,
@@ -203,9 +222,9 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
   },
   displayContainerLandscape: {
-    height: 56,
-    paddingVertical: 6,
-    marginBottom: 10,
+    height: 52,
+    paddingVertical: 4,
+    marginBottom: 8,
   },
   displayScrollContent: {
     flexGrow: 1,
@@ -219,7 +238,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   displayTextLandscape: {
-    fontSize: 26,
+    fontSize: 24,
   },
   columnLayout: {
     flex: 1,
@@ -261,6 +280,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   calcButtonTextLandscape: {
-    fontSize: 18,
+    fontSize: 17,
   },
 });
