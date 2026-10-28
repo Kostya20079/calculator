@@ -1,93 +1,16 @@
 import React, { useState } from 'react';
 import {
+  ScrollView,
   StyleSheet,
   Text,
-  View,
-  Pressable,
-  ScrollView,
   useWindowDimensions,
-  StyleProp,
-  ViewStyle,
+  View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-
-interface CalcButtonProps {
-  label: string;
-  onPress: (symbol: string) => void;
-  flex?: number;
-  isLandscape?: boolean;
-}
-
-export function CalcButton({
-  label,
-  onPress,
-  flex = 1,
-  isLandscape = false,
-}: CalcButtonProps) {
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.calcButton,
-        { flex },
-        pressed && styles.calcButtonPressed,
-      ]}
-      onPress={() => onPress(label)}
-      accessibilityRole="button"
-      accessibilityLabel={`Przycisk ${label}`}
-    >
-      <Text
-        style={[
-          styles.calcButtonText,
-          isLandscape && styles.calcButtonTextLandscape,
-        ]}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-interface KeypadProps {
-  keys: string[];
-  columns?: number;
-  onKeyPress: (symbol: string) => void;
-  style?: StyleProp<ViewStyle>;
-  isLandscape?: boolean;
-}
-
-export function Keypad({
-  keys,
-  columns = 4,
-  onKeyPress,
-  style,
-  isLandscape = false,
-}: KeypadProps) {
-  const rows: string[][] = [];
-  for (let i = 0; i < keys.length; i += columns) {
-    rows.push(keys.slice(i, i + columns));
-  }
-
-  return (
-    <View style={[styles.keypad, style]}>
-      {rows.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.row}>
-          {row.map((btn) => (
-            <CalcButton
-              key={btn}
-              label={btn}
-              onPress={onKeyPress}
-              isLandscape={isLandscape}
-            />
-          ))}
-        </View>
-      ))}
-    </View>
-  );
-}
+import Keypad from './Keypad';
 
 export const BASIC = [
-  'AC', '±', '%', '÷',
+  'AC', '()', '%', '÷',
   '7', '8', '9', '×',
   '4', '5', '6', '−',
   '1', '2', '3', '+',
@@ -95,14 +18,12 @@ export const BASIC = [
 ];
 
 export const EXTENDED = [
-  '(', ')',
   'x²', '√',
   'xʸ', '1/x',
   'π', 'e',
-  'ln', 'log',
 ];
 
-export function Calculator() {
+export default function Calculator() {
   const { width, height } = useWindowDimensions();
   const landscape = width > height;
 
@@ -175,25 +96,7 @@ export function Calculator() {
   );
 }
 
-export default function App() {
-  return (
-    <SafeAreaProvider>
-      {/* W orientacji poziomej wcięcia po bokach chronią skrajne kolumny przed zasłonięciem */}
-      <SafeAreaView
-        style={styles.safeArea}
-        edges={['top', 'bottom', 'left', 'right']}
-      >
-        <Calculator />
-      </SafeAreaView>
-    </SafeAreaProvider>
-  );
-}
-
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#f1f5f9',
-  },
   container: {
     flex: 1,
     backgroundColor: '#f1f5f9',
@@ -257,29 +160,5 @@ const styles = StyleSheet.create({
   keypad: {
     flex: 1,
     gap: 10,
-  },
-  row: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 10,
-  },
-  calcButton: {
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-  },
-  calcButtonPressed: {
-    backgroundColor: '#e2e8f0',
-  },
-  calcButtonText: {
-    fontSize: 22,
-    color: '#0f172a',
-    fontWeight: '600',
-  },
-  calcButtonTextLandscape: {
-    fontSize: 17,
   },
 });
