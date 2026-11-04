@@ -47,10 +47,9 @@ export default function CalculatorKey({
 
 const styles = StyleSheet.create({
   key: {
-    borderRadius: 10,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
   },
   pressed: {
     opacity: 0.7,

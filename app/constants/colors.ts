@@ -1,34 +1,34 @@
 export const Colors = {
-  background: '#f1f5f9',
-  card: '#ffffff',
-  border: '#cbd5e1',
-  text: '#0f172a',
+  background: '#ffffff',
+  card: '#f4f5f7',
+  border: 'transparent',
+  text: '#1a3a5c',
   pressed: '#e2e8f0',
 
   // Role-specific button colors
   digit: {
-    background: '#ffffff',
-    border: '#cbd5e1',
-    text: '#0f172a',
+    background: '#eceff3',
+    border: 'transparent',
+    text: '#284666',
   },
   operator: {
-    background: '#f8fafc',
-    border: '#94a3b8',
-    text: '#2563eb',
+    background: '#dce9ec',
+    border: 'transparent',
+    text: '#00585c',
   },
   equals: {
-    background: '#3b82f6',
-    border: '#2563eb',
+    background: '#006e73',
+    border: 'transparent',
     text: '#ffffff',
   },
   clear: {
-    background: '#fee2e2',
-    border: '#fca5a5',
-    text: '#dc2626',
+    background: '#f3d9d5',
+    border: 'transparent',
+    text: '#b03a2e',
   },
   function: {
-    background: '#f1f5f9',
-    border: '#cbd5e1',
-    text: '#475569',
+    background: '#dce9ec',
+    border: 'transparent',
+    text: '#00585c',
   },
 };

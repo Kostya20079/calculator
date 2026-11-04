@@ -102,13 +102,11 @@ const styles = StyleSheet.create({
   displayContainer: {
     height: 90,
     backgroundColor: Colors.card,
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    borderRadius: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     justifyContent: 'center',
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   displayContainerLandscape: {
     height: 52,
