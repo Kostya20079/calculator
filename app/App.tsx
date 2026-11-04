@@ -7,7 +7,6 @@ import { Colors } from './constants/colors';
 
 // Called in module scope, before the component runs. Not awaited.
 SplashScreen.preventAutoHideAsync();
-SplashScreen.setOptions({ duration: 400, fade: true });
 
 export default function App() {
   useEffect(() => {
