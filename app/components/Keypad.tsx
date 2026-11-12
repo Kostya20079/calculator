@@ -1,28 +1,29 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import KeypadProps from '../types/KeypadProps';
-import CalcButton from './CalcButton';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import type { Key } from '../keys';
+import CalculatorKey from './CalculatorKey';
+
+type KeypadProps = {
+  keys: Key[][];
+  onKeyPress: (label: string) => void;
+  style?: StyleProp<ViewStyle>;
+  isLandscape?: boolean;
+};
 
 export default function Keypad({
   keys,
-  columns = 4,
   onKeyPress,
   style,
   isLandscape = false,
 }: KeypadProps) {
-  const rows: string[][] = [];
-  for (let i = 0; i < keys.length; i += columns) {
-    rows.push(keys.slice(i, i + columns));
-  }
-
   return (
     <View style={[styles.keypad, style]}>
-      {rows.map((row, rowIndex) => (
+      {keys.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
-          {row.map((btn) => (
-            <CalcButton
-              key={btn}
-              label={btn}
+          {row.map((item) => (
+            <CalculatorKey
+              key={item.label}
+              item={item}
               onPress={onKeyPress}
               isLandscape={isLandscape}
             />

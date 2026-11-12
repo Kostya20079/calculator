@@ -7,21 +7,9 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { Colors } from '../constants/colors';
+import { BASIC, EXTENDED } from '../keys';
 import Keypad from './Keypad';
-
-export const BASIC = [
-  'AC', '()', '%', '÷',
-  '7', '8', '9', '×',
-  '4', '5', '6', '−',
-  '1', '2', '3', '+',
-  '0', ',', '⌫', '=',
-];
-
-export const EXTENDED = [
-  'x²', '√',
-  'xʸ', '1/x',
-  'π', 'e',
-];
 
 export default function Calculator() {
   const { width, height } = useWindowDimensions();
@@ -77,7 +65,6 @@ export default function Calculator() {
       <View style={landscape ? styles.rowLayout : styles.columnLayout}>
         <Keypad
           keys={BASIC}
-          columns={4}
           onKeyPress={handleKeyPress}
           style={landscape ? styles.basicLandscape : styles.keypad}
           isLandscape={landscape}
@@ -85,7 +72,6 @@ export default function Calculator() {
         {landscape && (
           <Keypad
             keys={EXTENDED}
-            columns={2}
             onKeyPress={handleKeyPress}
             style={styles.extendedLandscape}
             isLandscape={landscape}
@@ -99,7 +85,7 @@ export default function Calculator() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: Colors.background,
   },
   containerPortrait: {
     justifyContent: 'flex-start',
@@ -115,14 +101,12 @@ const styles = StyleSheet.create({
   },
   displayContainer: {
     height: 90,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     justifyContent: 'center',
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
   },
   displayContainerLandscape: {
     height: 52,
@@ -136,7 +120,7 @@ const styles = StyleSheet.create({
   },
   displayText: {
     fontSize: 36,
-    color: '#0f172a',
+    color: Colors.text,
     textAlign: 'right',
     fontWeight: '500',
   },
