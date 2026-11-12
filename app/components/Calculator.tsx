@@ -54,6 +54,20 @@ export default function Calculator() {
     } else if (key.role === 'clear' && key.label === '⌫') {
       setExpression((prev) => prev.slice(0, -1));
       setErrorMessage(null);
+    } else if (key.label === '()') {
+      setExpression((prev) => {
+        const openCount = (prev.match(/\(/g) || []).length;
+        const closeCount = (prev.match(/\)/g) || []).length;
+        const lastChar = prev.slice(-1);
+
+        // Jeśli mamy otwarte nawiasy i ostatni znak to cyfra, stała (π, e), ')' lub '%', to zamykamy nawias
+        if (openCount > closeCount && /[0-9πe)%]/.test(lastChar)) {
+          return prev + ')';
+        }
+
+        // W przeciwnym razie otwieramy nawias '('
+        return prev + '(';
+      });
     } else if (key.role === 'equals') {
       try {
         const result = evaluate(expression);
