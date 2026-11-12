@@ -10,21 +10,60 @@ import { StatusBar } from 'expo-status-bar';
 import { Colors } from '../constants/colors';
 import { BASIC, EXTENDED, Key } from '../keys';
 import Keypad from './Keypad';
-import { evaluate } from '../../src/logic/evaluate';
+import { evaluate, ExpressionError } from '../../src/logic/evaluate';
+
+function formatResult(value: number): string {
+  // Round to eliminate floating point representation artifacts (e.g. 0.30000000000000004 -> 0.3)
+  const rounded = Number(value.toFixed(10));
+  // Replace decimal point with comma for Polish UI display
+  return rounded.toString().replace('.', ',');
+}
+
+function translateError(error: ExpressionError): string {
+  if (error.message === 'Division by zero') {
+    return 'Nie można dzielić przez zero';
+  }
+  if (error.message === 'Empty expression') {
+    return 'Wprowadź wyrażenie';
+  }
+  if (error.message === 'Unclosed bracket') {
+    return 'Niedomknięty nawias';
+  }
+  return 'Błędne wyrażenie';
+}
 
 export default function Calculator() {
   const { width, height } = useWindowDimensions();
   const landscape = width > height;
 
   const [expression, setExpression] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleKeyPress = (key: Key): void => {
+    // Clear error message on new input
+    if (errorMessage && key.role !== 'equals') {
+      setErrorMessage(null);
+    }
+
     if (key.role === 'clear' && key.label === 'AC') {
       setExpression('');
+      setErrorMessage(null);
     } else if (key.role === 'clear' && key.label === '⌫') {
       setExpression((prev) => prev.slice(0, -1));
+      setErrorMessage(null);
     } else if (key.role === 'equals') {
-      evaluate(expression);
+      try {
+        const result = evaluate(expression);
+        setExpression(formatResult(result));
+        setErrorMessage(null);
+      } catch (err: unknown) {
+        if (err instanceof ExpressionError) {
+          setErrorMessage(translateError(err));
+        } else {
+          // Unexpected internal errors re-thrown so they are not masked as user errors
+          throw err;
+        }
+      }
     } else {
       setExpression((prev) => prev + (key.value ?? key.label));
     }
@@ -62,6 +101,17 @@ export default function Calculator() {
             {expression.length > 0 ? expression : '0'}
           </Text>
         </ScrollView>
+        {errorMessage ? (
+          <Text
+            style={[
+              styles.errorText,
+              landscape && styles.errorTextLandscape,
+            ]}
+            numberOfLines={1}
+          >
+            {errorMessage}
+          </Text>
+        ) : null}
       </View>
 
       {/* Kontener klawiatur: w poziomie układ wierszowy, w pionie kolumnowy */}
@@ -129,6 +179,17 @@ const styles = StyleSheet.create({
   },
   displayTextLandscape: {
     fontSize: 24,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#E53935',
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  errorTextLandscape: {
+    fontSize: 12,
+    marginTop: 2,
   },
   columnLayout: {
     flex: 1,
