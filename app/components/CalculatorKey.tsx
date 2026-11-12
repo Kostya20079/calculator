@@ -11,7 +11,7 @@ import type { Key, KeyRole } from '../keys';
 
 type CalculatorKeyProps = {
   item: Key;
-  onPress: (label: string) => void;
+  onPress: (item: Key) => void;
   isLandscape?: boolean;
 };
 
@@ -28,7 +28,7 @@ export default function CalculatorKey({
         { flex: item.span ?? 1 },
         pressed && styles.pressed,
       ]}
-      onPress={() => onPress(item.label)}
+      onPress={() => onPress(item)}
       accessibilityRole="button"
       accessibilityLabel={item.accessibilityLabel ?? `Klawisz ${item.label}`}
     >

@@ -8,8 +8,9 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Colors } from '../constants/colors';
-import { BASIC, EXTENDED } from '../keys';
+import { BASIC, EXTENDED, Key } from '../keys';
 import Keypad from './Keypad';
+import { evaluate } from '../../src/logic/evaluate';
 
 export default function Calculator() {
   const { width, height } = useWindowDimensions();
@@ -17,13 +18,15 @@ export default function Calculator() {
 
   const [expression, setExpression] = useState('');
 
-  const handleKeyPress = (symbol: string): void => {
-    if (symbol === 'AC') {
+  const handleKeyPress = (key: Key): void => {
+    if (key.role === 'clear' && key.label === 'AC') {
       setExpression('');
-    } else if (symbol === '⌫') {
+    } else if (key.role === 'clear' && key.label === '⌫') {
       setExpression((prev) => prev.slice(0, -1));
+    } else if (key.role === 'equals') {
+      evaluate(expression);
     } else {
-      setExpression((prev) => prev + symbol);
+      setExpression((prev) => prev + (key.value ?? key.label));
     }
   };
 
