@@ -23,6 +23,9 @@ function translateError(error: ExpressionError): string {
   if (error.message === 'Division by zero') {
     return 'Nie można dzielić przez zero';
   }
+  if (error.message === 'Invalid square root') {
+    return 'Błąd: pierwiastek z liczby ujemnej';
+  }
   if (error.message === 'Empty expression') {
     return 'Wprowadź wyrażenie';
   }

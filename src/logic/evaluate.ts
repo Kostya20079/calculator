@@ -4,7 +4,7 @@
 // The tests from task 2 import it, so it has to exist from the start.
 export class ExpressionError extends Error {}
 
-type TokenType = 'NUMBER' | 'OP' | 'LPAREN' | 'RPAREN';
+type TokenType = 'NUMBER' | 'OP' | 'LPAREN' | 'RPAREN' | 'POSTFIX_OP' | 'PREFIX_OP';
 
 interface Token {
   type: TokenType;
@@ -12,7 +12,7 @@ interface Token {
 }
 
 function tokenize(input: string): Token[] {
-  // 1. Normalize characters from keyboard/display
+  // Normalize characters from keyboard/display
   // Replace minus (U+2212) with standard hyphen-minus (U+002D)
   // Replace multiplication sign '×' with '*'
   // Replace division sign '÷' with '/'
@@ -46,6 +46,36 @@ function tokenize(input: string): Token[] {
       continue;
     }
 
+    if (ch === 'π') {
+      tokens.push({ type: 'NUMBER', value: Math.PI.toString() });
+      i++;
+      continue;
+    }
+
+    if (ch === 'e') {
+      tokens.push({ type: 'NUMBER', value: Math.E.toString() });
+      i++;
+      continue;
+    }
+
+    if (ch === '√') {
+      tokens.push({ type: 'PREFIX_OP', value: '√' });
+      i++;
+      continue;
+    }
+
+    if (ch === '%') {
+      tokens.push({ type: 'POSTFIX_OP', value: '%' });
+      i++;
+      continue;
+    }
+
+    if (ch === '^') {
+      tokens.push({ type: 'OP', value: '^' });
+      i++;
+      continue;
+    }
+
     if (ch === '+' || ch === '*' || ch === '/') {
       tokens.push({ type: 'OP', value: ch });
       i++;
@@ -53,16 +83,15 @@ function tokenize(input: string): Token[] {
     }
 
     if (ch === '-') {
-      // Check if this '-' is unary (at start or preceded by operator or '(')
+      // Check if this '-' is unary (at start or preceded by binary operator, prefix operator, or '(')
       const prev = tokens[tokens.length - 1];
-      if (!prev || prev.type === 'OP' || prev.type === 'LPAREN') {
-        // Unary minus - treat as part of number or unary operator
-        // We can check if following is a number
+      if (!prev || prev.type === 'OP' || prev.type === 'LPAREN' || prev.type === 'PREFIX_OP') {
+        // Unary minus
         let nextIdx = i + 1;
         while (nextIdx < normalized.length && /\s/.test(normalized[nextIdx])) {
           nextIdx++;
         }
-        if (nextIdx < normalized.length && (/[0-9.]/.test(normalized[nextIdx]))) {
+        if (nextIdx < normalized.length && /[0-9.]/.test(normalized[nextIdx])) {
           // Read number with minus
           let numStr = '-';
           i = nextIdx;
@@ -73,8 +102,8 @@ function tokenize(input: string): Token[] {
           tokens.push({ type: 'NUMBER', value: numStr });
           continue;
         } else {
-          // e.g. -(2+2)
-          tokens.push({ type: 'OP', value: 'UNARY_MINUS' });
+          // e.g. -(2+2) or -π
+          tokens.push({ type: 'PREFIX_OP', value: 'UNARY_MINUS' });
           i++;
           continue;
         }
@@ -125,8 +154,11 @@ export function evaluate(input: string): number {
 
   // Grammar:
   // expression := term (('+' | '-') term)*
-  // term := factor (('*' | '/') factor)*
-  // factor := ('-' | 'UNARY_MINUS') factor | number | '(' expression ')'
+  // term := power (('*' | '/') power)*
+  // power := unary ('^' unary)*
+  // unary := ('-' | '√') unary | postfix
+  // postfix := primary ('%')*
+  // primary := number | '(' expression ')'
 
   function parseExpression(): number {
     let result = parseTerm();
@@ -145,11 +177,11 @@ export function evaluate(input: string): number {
   }
 
   function parseTerm(): number {
-    let result = parseFactor();
+    let result = parsePower();
 
     while (peek() && peek()!.type === 'OP' && (peek()!.value === '*' || peek()!.value === '/')) {
       const op = consume().value;
-      const nextFactor = parseFactor();
+      const nextFactor = parsePower();
       if (op === '*') {
         result *= nextFactor;
       } else {
@@ -163,15 +195,56 @@ export function evaluate(input: string): number {
     return result;
   }
 
-  function parseFactor(): number {
+  function parsePower(): number {
+    let result = parseUnary();
+
+    while (peek() && peek()!.type === 'OP' && peek()!.value === '^') {
+      consume(); // consume '^'
+      const exponent = parseUnary();
+      result = Math.pow(result, exponent);
+    }
+
+    return result;
+  }
+
+  function parseUnary(): number {
     const token = peek();
     if (!token) {
       throw new ExpressionError('Unexpected end of expression');
     }
 
-    if (token.type === 'OP' && token.value === 'UNARY_MINUS') {
+    if (token.type === 'PREFIX_OP' && token.value === 'UNARY_MINUS') {
       consume();
-      return -parseFactor();
+      return -parseUnary();
+    }
+
+    if (token.type === 'PREFIX_OP' && token.value === '√') {
+      consume();
+      const val = parseUnary();
+      if (val < 0) {
+        throw new ExpressionError('Invalid square root');
+      }
+      return Math.sqrt(val);
+    }
+
+    return parsePostfix();
+  }
+
+  function parsePostfix(): number {
+    let result = parsePrimary();
+
+    while (peek() && peek()!.type === 'POSTFIX_OP' && peek()!.value === '%') {
+      consume(); // consume '%'
+      result = result / 100;
+    }
+
+    return result;
+  }
+
+  function parsePrimary(): number {
+    const token = peek();
+    if (!token) {
+      throw new ExpressionError('Unexpected end of expression');
     }
 
     if (token.type === 'NUMBER') {

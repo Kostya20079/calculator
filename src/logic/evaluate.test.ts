@@ -44,6 +44,40 @@ describe('floating point', () => {
   });
 });
 
+describe('extended keys', () => {
+  test('constants π and e', () => {
+    assert.ok(Math.abs(evaluate('π') - Math.PI) < 1e-9);
+    assert.ok(Math.abs(evaluate('e') - Math.E) < 1e-9);
+    assert.ok(Math.abs(evaluate('2×π') - 2 * Math.PI) < 1e-9);
+  });
+
+  test('square root √', () => {
+    assert.equal(evaluate('√9'), 3);
+    assert.equal(evaluate('√(16)'), 4);
+    assert.equal(evaluate('2+√9×2'), 8); // 2 + 3 * 2 = 8
+  });
+
+  test('square root of negative number throws ExpressionError', () => {
+    assert.throws(() => evaluate('√(-4)'), ExpressionError);
+  });
+
+  test('power ^ and x²', () => {
+    assert.equal(evaluate('2^3'), 8);
+    assert.equal(evaluate('3^2'), 9);
+    assert.equal(evaluate('2+3^2'), 11); // 2 + 9 = 11
+  });
+
+  test('reciprocal 1/x', () => {
+    assert.equal(evaluate('1/2'), 0.5);
+    assert.equal(evaluate('1/4+0,5'), 0.75);
+  });
+
+  test('percent %', () => {
+    assert.equal(evaluate('50%'), 0.5);
+    assert.equal(evaluate('200×10%'), 20);
+  });
+});
+
 describe('what has to fail', () => {
   test('empty expression is an error', () => {
     assert.throws(() => evaluate(''), ExpressionError);
