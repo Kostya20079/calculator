@@ -5,17 +5,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import Calculator from './components/Calculator';
 import { Colors } from './constants/colors';
 
-// Called in module scope, before the component runs. Not awaited.
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
+// SplashScreen.setOptions({ duration: 400, fade: true });
 
 export default function App() {
-  useEffect(() => {
-    // Hide splash screen once initial render is ready
-    SplashScreen.hideAsync().catch((error) => {
-      console.warn('Error hiding splash screen:', error);
-    });
-  }, []);
-
   return (
     <SafeAreaProvider>
       <SafeAreaView
@@ -26,6 +19,7 @@ export default function App() {
       </SafeAreaView>
     </SafeAreaProvider>
   );
+  // SplashScreen.hideAsync();
 }
 
 const styles = StyleSheet.create({
