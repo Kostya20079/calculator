@@ -3,6 +3,8 @@
   "compilerOptions": {
     "jsx": "react",
     "strict": true,
-    "erasableSyntaxOnly": true
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "types": ["node"]
   }
 }

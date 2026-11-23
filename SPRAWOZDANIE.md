@@ -16,3 +16,12 @@ Wpisanie symbolu stałej (`π`) zamiast przybliżonej wartości liczbowej (`3,14
 1. Wpisanie `3,14159` to ucięcie liczby do zaledwie 5 miejsc po przecinku już na etapie wprowadzania danych, co kumuluje błędy zaokrągleń w kolejnych operacjach (mnożenie, funkcje trygonometryczne).
 2. Reprezentacja symboliczna pozwala silnikowi obliczeniowemu (który powstanie w laboratorium 6) podstawić stałą z pełną precyzją podwójnej dokładności IEEE 754 (`Math.PI` – około 15-17 cyfr znaczących: `3.141592653589793`).
 3. Wyrażenie z symbolem `π` jest znacznie bardziej czytelne dla użytkownika niż rozwinięcie dziesiętne.
+
+---
+
+# Sprawozdanie – Konspekt 6: Kalkulator liczy - i skąd wiadomo, że dobrze
+
+## Zadanie 3. Wybór sposobu liczenia
+**Uzasadnienie wyboru:**
+Wybrano implementację własnego parsera metodą zejścia rekurencyjnego (recursive descent parser), ponieważ zapewnia pełną kontrolę nad gramatyką wyrażeń i kolejnością działań bez wprowadzania zewnętrznych zależności oraz bez ograniczeń silnika Hermes i ryzyk związanych z użyciem `eval`.
+
