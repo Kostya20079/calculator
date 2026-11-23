@@ -5,7 +5,7 @@ import CalculatorKey from './CalculatorKey';
 
 type KeypadProps = {
   keys: Key[][];
-  onKeyPress: (label: string) => void;
+  onKeyPress: (key: Key) => void;
   style?: StyleProp<ViewStyle>;
   isLandscape?: boolean;
 };
