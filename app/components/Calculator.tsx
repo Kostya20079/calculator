@@ -10,7 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Colors } from '../constants/colors';
 import { BASIC, EXTENDED, Key } from '../keys';
 import Keypad from './Keypad';
-import { evaluate, ExpressionError } from '../../src/logic/evaluate';
+import { evaluate, ExpressionError } from '../logic/evaluate';
 
 function formatResult(value: number): string {
   // Round to eliminate floating point representation artifacts (e.g. 0.30000000000000004 -> 0.3)

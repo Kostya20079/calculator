@@ -1,7 +1,3 @@
-// src/logic/evaluate.ts
-// No import from 'react' or 'react-native' anywhere in this file.
-// Thrown for input the user got wrong - never for a bug in this code.
-// The tests from task 2 import it, so it has to exist from the start.
 export class ExpressionError extends Error {}
 
 type TokenType = 'NUMBER' | 'OP' | 'LPAREN' | 'RPAREN' | 'POSTFIX_OP' | 'PREFIX_OP';
@@ -12,12 +8,7 @@ interface Token {
 }
 
 function tokenize(input: string): Token[] {
-  // Normalize characters from keyboard/display
-  // Replace minus (U+2212) with standard hyphen-minus (U+002D)
-  // Replace multiplication sign '×' with '*'
-  // Replace division sign '÷' with '/'
-  // Replace decimal comma ',' with '.'
-  let normalized = input
+let normalized = input
     .replaceAll('−', '-')
     .replaceAll('×', '*')
     .replaceAll('÷', '/')
